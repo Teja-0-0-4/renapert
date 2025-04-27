@@ -38,7 +38,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const API_URL = process.env.REACT_APP_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleChange = (e) => {
     setFormData({
@@ -53,6 +53,10 @@ const Login = () => {
     setLoading(true);
 
     try {
+      if (!API_URL) {
+        throw new Error('API URL is not configured');
+      }
+
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
@@ -74,6 +78,7 @@ const Login = () => {
       navigate(from, { replace: true });
     } catch (err) {
       setError(err.message);
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
