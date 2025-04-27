@@ -50,7 +50,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const API_URL = process.env.REACT_APP_API_URL;
+  const API_URL = import.meta.env.VITE_API_URL;
 
   const handleChange = (e) => {
     setFormData({
@@ -86,6 +86,10 @@ const Register = () => {
     setLoading(true);
 
     try {
+      if (!API_URL) {
+        throw new Error('API URL is not configured');
+      }
+
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
@@ -107,6 +111,7 @@ const Register = () => {
       navigate('/login');
     } catch (err) {
       setError(err.message);
+      console.error('Registration error:', err);
     } finally {
       setLoading(false);
     }
