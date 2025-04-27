@@ -30,7 +30,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import SendIcon from '@mui/icons-material/Send';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 const SubmitBiomarkers = () => {
   const [formData, setFormData] = useState({
@@ -91,16 +91,22 @@ const SubmitBiomarkers = () => {
     setResult(null);
 
     try {
+      if (!API_URL) {
+        throw new Error('API URL is not configured');
+      }
+
       // Get the token from localStorage
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('Please login to submit biomarkers');
       }
+
       // Get the user from localStorage
       const user = JSON.parse(localStorage.getItem('user'));
       if (!user) {
         throw new Error('User not found. Please login again.');
       }
+
       // Convert empty strings to 0 and ensure numeric values
       const processedData = Object.fromEntries(
         Object.entries(formData).map(([key, value]) => [
@@ -108,6 +114,7 @@ const SubmitBiomarkers = () => {
           value === '' ? 0 : Number(value)
         ])
       );
+
       const response = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: {
@@ -116,34 +123,37 @@ const SubmitBiomarkers = () => {
         },
         body: JSON.stringify(processedData),
       });
+
       if (!response.ok) {
         if (response.status === 401) {
           throw new Error('Session expired. Please login again.');
         }
         throw new Error('Failed to get prediction');
       }
+
       const data = await response.json();
       setResult(data);
-      // Store the result in localStorage with userEmail, preserving recommendations as-is
+
+      // Store the result in localStorage with userEmail
       const historyEntry = {
         date: new Date().toISOString(),
         health_score: data.health_score,
         ckd_stage: data.ckd_stage,
         gfr: data.gfr,
-        recommendations: data.recommendations, // store as object or array as returned
+        recommendations: data.recommendations,
         biomarkers: processedData,
         userEmail: user.email
       };
+
       const existingHistory = JSON.parse(localStorage.getItem('healthHistory') || '[]');
       localStorage.setItem('healthHistory', JSON.stringify([historyEntry, ...existingHistory]));
-      // Debug log
-      console.log('Saved history entry:', historyEntry);
+
       // Navigate to health score page with the result
       navigate('/health-score', { state: { result: data } });
     } catch (err) {
       setError(err.message);
+      console.error('Prediction error:', err);
       if (err.message.includes('Session expired')) {
-        // Redirect to login if session expired
         navigate('/login');
       }
     } finally {
