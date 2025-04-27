@@ -11,7 +11,8 @@ import sqlite3
 import hashlib
 
 app = Flask(__name__)
-CORS(app, origins=["https://renapert.vercel.app", "https://www.renapert.vercel.app"])
+CORS(app, origins=["https://renapert.vercel.app", "https://www.renapert.vercel.app","https://renapert-git-main-teja-0-0-4s-projects.vercel.app",
+      "https://renapert-6c3cg4t2o-teja-0-0-4s-projects.vercel.app"])
 
 # Configuration
 app.config['JWT_SECRET_KEY'] = 'your-secret-key'  # Change this to a secure secret key
