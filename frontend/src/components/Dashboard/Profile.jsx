@@ -8,7 +8,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 const Profile = () => {
   const theme = useTheme();
@@ -34,6 +34,10 @@ const Profile = () => {
       setLoading(true);
       setError('');
       try {
+        if (!API_URL) {
+          throw new Error('API URL is not configured');
+        }
+
         const res = await axios.get(`${API_URL}/api/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -51,6 +55,7 @@ const Profile = () => {
         }
       } catch (err) {
         setError('Failed to load profile.');
+        console.error('Profile fetch error:', err);
         setProfile({});
       }
       setLoading(false);
@@ -65,6 +70,10 @@ const Profile = () => {
     setError('');
     setSuccess('');
     try {
+      if (!API_URL) {
+        throw new Error('API URL is not configured');
+      }
+
       const res = await axios.post(`${API_URL}/api/profile`, form, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -73,6 +82,7 @@ const Profile = () => {
       setEditing(false);
     } catch (err) {
       setError('Failed to save profile.');
+      console.error('Profile save error:', err);
     }
     setSaving(false);
   };
