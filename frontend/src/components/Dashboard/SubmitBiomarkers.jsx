@@ -30,6 +30,8 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import SendIcon from '@mui/icons-material/Send';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const SubmitBiomarkers = () => {
   const [formData, setFormData] = useState({
     age: '',
@@ -106,7 +108,7 @@ const SubmitBiomarkers = () => {
           value === '' ? 0 : Number(value)
         ])
       );
-      const response = await fetch('http://localhost:5001/predict', {
+      const response = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

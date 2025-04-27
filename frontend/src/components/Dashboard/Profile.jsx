@@ -8,6 +8,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const Profile = () => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -32,7 +34,7 @@ const Profile = () => {
       setLoading(true);
       setError('');
       try {
-        const res = await axios.get('http://localhost:5001/api/profile', {
+        const res = await axios.get(`${API_URL}/api/profile`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.data && Object.keys(res.data).length > 0) {
@@ -63,7 +65,7 @@ const Profile = () => {
     setError('');
     setSuccess('');
     try {
-      const res = await axios.post('http://localhost:5001/api/profile', form, {
+      const res = await axios.post(`${API_URL}/api/profile`, form, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile(res.data);
